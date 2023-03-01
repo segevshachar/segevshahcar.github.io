@@ -1,0 +1,31 @@
+// app global css in SCSS form
+
+.vis-item.red {
+  color: white;
+  background-color: red;
+  border-color: darkred;
+}
+
+.vis-item {
+  top: 3px;
+}
+.vis-item.vis-dot.diamond {
+  width: 0;
+  height: 0;
+  top: 1px;
+  position: absolute;
+  border-width: 7px;
+  border: 7px solid transparent;
+  border-bottom: 7px solid red;
+  background-color: aliceblue;
+}
+.vis-item.vis-dot.diamond:after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: -5px;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top: 7px solid red;
+}

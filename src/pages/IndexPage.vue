@@ -1,0 +1,322 @@
+<template>
+  <div class="home">
+    <div class="row">
+      <div class="small-12 text-center" style="margin-left: 40px">
+        <h4>{{ this.$data.title }}</h4>
+      </div>
+      <div id="chart4" style="height: 700px; width: 100%"></div>
+    </div>
+    <div class="q-pa-md">
+      <div class="row">
+        <div class="col" style="max-width: 200px margin: 50px;">
+          <q-input
+            label="From"
+            filled
+            v-model="from_date"
+            :rules="[(val) => Date.parse(val) || 'Invalid date.']"
+            input-class="cursor-pointer"
+            mask="####-##-##"
+          >
+            <q-popup-proxy ref="qDateProxy" :breakpoint="0" behavior="menu">
+              <q-date
+                v-model="from_date"
+                minimal
+                @update:model-value="$refs.qDateProxy.hide()"
+                no-unset
+                mask="YYYY-MM-DD"
+              >
+                <div class="row items-center justify-end">
+                  <q-btn
+                    v-close-popup
+                    label="Close"
+                    color="primary"
+                    flat
+                  ></q-btn>
+                </div>
+              </q-date>
+            </q-popup-proxy>
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="col">
+          <q-input
+            label="To"
+            filled
+            v-model="to_date"
+            :rules="[(val) => Date.parse(val) || 'Invalid date.']"
+            input-class="cursor-pointer"
+            mask="####-##-##"
+          >
+            <q-popup-proxy ref="qDateProxy" :breakpoint="0" behavior="menu">
+              <q-date
+                v-model="to_date"
+                minimal
+                @update:model-value="$refs.qDateProxy.hide()"
+                no-unset
+                mask="YYYY-MM-DD"
+              >
+                <div class="row items-center justify-end">
+                  <q-btn
+                    v-close-popup
+                    label="Close"
+                    color="primary"
+                    flat
+                  ></q-btn>
+                </div>
+              </q-date>
+            </q-popup-proxy>
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer"></q-icon>
+            </template>
+          </q-input>
+        </div>
+        <div class="col">
+          <q-btn
+            color="primary"
+            label="Reset"
+            @click="handleResetClicked"
+            padding="15px 30px"
+          />
+        </div>
+      </div>
+    </div>
+    <EditItem
+      ref="editItem"
+      @add-new-item="handleAddItem"
+      @update-item="handleUpdateItem"
+    ></EditItem>
+    <LoadJson ref="loadJson" @load-json="handleLoadJson"></LoadJson>
+  </div>
+</template>
+
+<script>
+import { defineComponent } from 'vue'
+import { Timeline } from 'vis-timeline/standalone'
+import 'vis-timeline/styles/vis-timeline-graph2d.css'
+import EditItem from 'src/components/EditItem.vue'
+import LoadJson from 'src/components/LoadJson.vue'
+import { dateToyyyymmdd } from 'src/util/date';
+
+let timeline
+
+export default defineComponent({
+  name: 'IndexPage',
+  data () {
+    return {
+      title: 'Prostate Cancer Disease Progression',
+      from_date: '2020-01-01',
+      to_date: '2022-12-31',
+      item_data: [
+        {
+          content: 'Hypertension',
+          start: '2010-01-01',
+          end: '2022-12-31',
+          group: 'diseases'
+        },
+        {
+          content: 'Diabetes',
+          start: '2010-01-01',
+          end: '2022-12-31',
+          group: 'diseases'
+        },
+        {
+          content: 'PSA 47',
+          start: '2020-01-30',
+          type: 'point',
+          group: 'diagnosis'
+        },
+        {
+          content: 'Reoccurrence Castration-Resistant',
+          start: '2020-07-16',
+          type: 'point',
+          group: 'diagnosis'
+        },
+        {
+          content: 'Treatment-Resistant',
+          start: '2021-07-16',
+          type: 'point',
+          group: 'diagnosis'
+        },
+        {
+          content: 'PET CT Bone Metastasis',
+          start: '2022-07-16',
+          type: 'point',
+          group: 'diagnosis'
+        },
+        {
+          content: 'Anemia (HgB<6) Iron Deficiency',
+          start: '2022-10-16',
+          type: 'point',
+          group: 'diagnosis'
+        },
+        {
+          content: 'Hormonal Castration',
+          start: '2020-02-01',
+          end: '2020-06-30',
+          group: 'treatment',
+          subgroup: '3'
+        },
+        {
+          content: 'Treatment',
+          start: '2020-08-15',
+          end: '2021-10-15',
+          group: 'treatment',
+          subgroup: '3'
+        },
+        {
+          content: 'Taxoter',
+          start: '2020-02-15',
+          end: '2020-04-15',
+          group: 'treatment',
+          subgroup: '2'
+        },
+        {
+          content: 'Radiation Therapy',
+          start: '2020-02-15',
+          end: '2020-06-15',
+          group: 'treatment',
+          subgroup: '1'
+        },
+        {
+          id: 11,
+          content: 'Radiation Therapy',
+          title: 'Radiation Therapy title',
+          start: '2021-06-15',
+          end: '2021-07-15',
+          group: 'treatment',
+          subgroup: '1'
+        }
+      ],
+      group_data: [
+        {
+          id: 'treatment',
+          content: 'Treatment',
+          title: 'Treatment title',
+          subgroupStack: true
+        },
+        {
+          id: 'diagnosis',
+          content: 'Diagnosis'
+        },
+        {
+          id: 'diseases',
+          content: 'Diseases'
+        }
+      ]
+    }
+  },
+  mounted () {
+    const chart4 = document.getElementById('chart4')
+    const options = {
+      editable: true,
+      itemsAlwaysDraggable: {
+        item: true,
+        range: true
+      },
+      start: new Date(this.$data.from_date),
+      end: new Date(this.$data.to_date),
+      onAdd: this.handleAddItemClick
+    }
+    // Create a Timeline
+    timeline = new Timeline(
+      chart4,
+      this.$data.item_data,
+      this.$data.group_data,
+      options
+    )
+    timeline.on('select', this.handleSellect)
+  },
+  methods: {
+    handleResetClicked () {
+      timeline.setWindow(
+        new Date(this.$data.from_date),
+        new Date(this.$data.to_date)
+      )
+    },
+    handleLoadClicked () {
+      const items = timeline.itemsData.get()
+      const data = this.$data
+      data.item_data = items
+      const window = timeline.getWindow();
+      data.from_date = dateToyyyymmdd(window.start);
+      data.to_date = dateToyyyymmdd(window.end);
+      this.$refs.loadJson.showDialog(JSON.stringify(data))
+    },
+    handleSellect (properties) {
+      const item = timeline.itemsData
+        .get()
+        .find((i) => i.id === properties.items[0])
+      item.type = item.type || 'range'
+      this.$refs.editItem.showDialog(item, false)
+    },
+    handleAddItem (item) {
+      const type = item.type
+      const end = item.end
+        ? item.end
+        : type === 'point' || type === 'box'
+          ? undefined
+          : new Date(item.start.getTime() + 86400000 * 30)
+      const group = type === 'background' ? undefined : item.group
+      const newItem = {
+        content: item.content,
+        title: item.title,
+        start: item.start,
+        end,
+        group,
+        type,
+        subgroup: item.subgroup
+      }
+      const newItems = timeline.itemsData.get()
+      newItems.push(newItem)
+      timeline.setItems(newItems)
+    },
+    handleUpdateItem (item) {
+      const newItems = timeline.itemsData.get()
+      const index = newItems.findIndex((i) => i.id === item.id)
+
+      const type = item.type
+      const end = item.end
+        ? item.end
+        : type === 'point' || type === 'box'
+          ? undefined
+          : new Date(item.start.getTime() + 86400000 * 30)
+      const group = type === 'background' ? undefined : item.group
+      const newItem = {
+        content: item.content,
+        title: item.title,
+        start: item.start,
+        end,
+        group,
+        type,
+        subgroup: item.subgroup
+      }
+
+      newItems[index] = newItem
+      timeline.setItems(newItems)
+    },
+    handleAddItemClick (item, callback) {
+      callback(null)
+      item.content = ''
+      item.type = 'range'
+      this.$refs.editItem.showDialog(item, true)
+    },
+    handleLoadJson (json) {
+      const data = JSON.parse(json)
+      this.$data.from_date = data.from_date
+      this.$data.to_date = data.to_date
+      this.$data.title = data.title
+      this.$data.item_data = data.item_data
+      this.$data.group_data = data.group_data
+      timeline.setItems(data.item_data);
+      timeline.setGroups(data.group_data);
+      timeline.setWindow(
+        new Date(this.$data.from_date),
+        new Date(this.$data.to_date)
+      );
+    }
+  },
+  components: { EditItem, LoadJson }
+})
+</script>
