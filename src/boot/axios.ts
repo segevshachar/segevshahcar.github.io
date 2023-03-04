@@ -3,7 +3,7 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
-const api = axios.create({ baseURL: 'http://18.219.213.175:3000' })
+const api = axios.create({ baseURL: 'http://dev-lb-1490108108.us-east-2.elb.amazonaws.com' })
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
