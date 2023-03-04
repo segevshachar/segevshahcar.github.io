@@ -6,6 +6,40 @@
   border-color: darkred;
 }
 
+.vis-item.magenta {
+  background-color: magenta;
+  border-color: purple;
+  color: white;
+}
+
+.vis-item.green {
+  background-color: greenyellow;
+  border-color: green;
+}
+
+.vis-item.orange {
+  background-color: gold;
+  border-color: orange;
+}
+
+.vis-item.yellow {
+  background-color: yellow;
+  border-color: orange;
+}
+
+.vis-item.blue {
+  background-color: blue;
+  border-color: white;
+  color: white;
+}
+
+.vis-item.purple {
+  background-color: purple;
+  border-color: white;
+  color: white;
+}
+
+
 .vis-item {
   top: 3px;
 }

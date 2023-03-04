@@ -27,6 +27,15 @@
       <q-card-section class="q-pt-none">
         <q-input label="Sub Group" dense v-model="item.subgroup" autofocus />
       </q-card-section>
+      <q-card-section class="q-pt-none">
+        <q-select
+          v-model="item.color"
+          label="Color"
+          :options="colors"
+          style="width: 250px"
+          behavior="menu"
+        />
+      </q-card-section>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup />
         <q-btn
@@ -45,7 +54,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ItemType from 'src/components/ItemType.vue';
-import { Item } from 'src/types/item';
+import { Item, colors } from 'src/types/item';
 
 export default defineComponent({
   name: 'EditItem',
@@ -53,7 +62,8 @@ export default defineComponent({
     return {
       show: false,
       newItem: false,
-      item: { content: '', title: '', type: 'box', group: '', subgroup: '' },
+      item: { content: '', title: '', type: 'box', group: '', subgroup: '', color: '' },
+      colors: colors,
     };
   },
   methods: {
