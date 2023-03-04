@@ -267,7 +267,7 @@ export default defineComponent({
         group,
         type,
         subgroup: item.subgroup,
-        className: item.color,
+        className: item.className,
       }
       const newItems = timeline.itemsData.get()
       newItems.push(newItem)
@@ -292,7 +292,7 @@ export default defineComponent({
         group,
         type,
         subgroup: item.subgroup,
-        className: item.color,
+        className: item.className,
       }
 
       newItems[index] = newItem

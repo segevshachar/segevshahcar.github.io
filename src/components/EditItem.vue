@@ -29,7 +29,7 @@
       </q-card-section>
       <q-card-section class="q-pt-none">
         <q-select
-          v-model="item.color"
+          v-model="item.className"
           label="Color"
           :options="colors"
           style="width: 250px"
@@ -62,7 +62,7 @@ export default defineComponent({
     return {
       show: false,
       newItem: false,
-      item: { content: '', title: '', type: 'box', group: '', subgroup: '', color: '' },
+      item: { content: '', title: '', type: 'box', group: '', subgroup: '', className: '' },
       colors: colors,
     };
   },

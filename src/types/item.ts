@@ -6,7 +6,7 @@ export interface Item {
   end: Date;
   group: string;
   subgroup: string;
-  color: string;
+  className: string;
 }
 
 export const colors = ['red', 'magenta', 'green', 'orange', 'purple', 'yellow' , 'blue'];

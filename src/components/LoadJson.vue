@@ -68,12 +68,15 @@ export default defineComponent({
         this.$data.files = response.data.data
       })
       .catch(() => {
+        console.log('error');
+        /*
         this.$q.notify({
           color: 'negative',
           position: 'top',
           message: 'Loading failed',
           icon: 'report_problem'
         })
+        */
       })
     },
     filterFn (val:string, update: (arg0: { (): void; (): void; }) => void) {
