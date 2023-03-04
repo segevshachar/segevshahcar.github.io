@@ -32,7 +32,8 @@ export default defineComponent({
       (this.$refs as any).index.handleLoadClicked();
     },
     download () {
-      saveTextAsFile(JSON.stringify((this.$refs as any).index.$data))
+      (this.$refs as any).index.loadDataFromTimeline();
+      saveTextAsFile(JSON.stringify((this.$refs as any).index.$data));
       /*
       const data = JSON.stringify((this.$refs as any).index.$data);
       const headers = {

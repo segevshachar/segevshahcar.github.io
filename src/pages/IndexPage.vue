@@ -235,14 +235,16 @@ export default defineComponent({
         new Date(this.$data.to_date)
       )
     },
-    handleLoadClicked () {
+    loadDataFromTimeline () {
       const items = timeline.itemsData.get()
-      const data = this.$data
-      data.item_data = items
+      this.$data.item_data = items
       const window = timeline.getWindow();
-      data.from_date = dateToyyyymmdd(window.start);
-      data.to_date = dateToyyyymmdd(window.end);
-      this.$refs.loadJson.showDialog(JSON.stringify(data))
+      this.$data.from_date = dateToyyyymmdd(window.start);
+      this.$data.to_date = dateToyyyymmdd(window.end);
+    },
+    handleLoadClicked () {
+      this.loadDataFromTimeline();
+      this.$refs.loadJson.showDialog(JSON.stringify(this.$data))
     },
     handleSellect (properties) {
       const item = timeline.itemsData
