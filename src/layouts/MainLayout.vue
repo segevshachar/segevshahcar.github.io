@@ -33,8 +33,8 @@ export default defineComponent({
     },
     download () {
       (this.$refs as any).index.loadDataFromTimeline();
-      saveTextAsFile(JSON.stringify((this.$refs as any).index.$data));
-      /*
+      //saveTextAsFile(JSON.stringify((this.$refs as any).index.$data));
+
       const data = JSON.stringify((this.$refs as any).index.$data);
       const headers = {
         'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export default defineComponent({
           icon: 'report_problem'
         })
       })
-    */
+
     }
   }
 })
