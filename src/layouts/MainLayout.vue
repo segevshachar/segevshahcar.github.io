@@ -39,7 +39,7 @@ export default defineComponent({
       const headers = {
         'Content-Type': 'application/json',
       }
-      api.post('/files/try555.json', {id: 'try.json', data: 'data' })
+      api.post('/files', {id: 'try.json', data: 'data' })
       .then((response) => {
         this.$q.notify({
           color: 'positive',
