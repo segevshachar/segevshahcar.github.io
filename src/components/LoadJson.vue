@@ -14,7 +14,7 @@
         <q-select
           filled
           v-model="filename"
-          label="Select file"
+          label="Select file:"
           :options="filterFiles"
           style="width: 250px"
           behavior="menu"
