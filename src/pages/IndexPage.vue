@@ -219,7 +219,7 @@ export default defineComponent({
       },
       start: new Date(this.$data.from_date),
       end: new Date(this.$data.to_date),
-      onAdd: this.handleAddItemClick
+      onAdd: this.handleAddItemClick,
     }
     // Create a Timeline
     timeline = new Timeline(
@@ -228,7 +228,7 @@ export default defineComponent({
       this.$data.group_data,
       options
     )
-    timeline.on('select', this.handleSellect)
+    timeline.on('contextmenu', this.handleSellect)
   },
   methods: {
     handleResetClicked () {
@@ -307,11 +307,22 @@ export default defineComponent({
       })
     },
     handleSellect (properties) {
+      if (!properties.item) {
+        let item = {};
+        item.group = properties.group;
+        item.start = properties.time;
+        item.content = '';
+        item.type = 'range';
+        this.$refs.editItem.showDialog(item, true)
+
+      } else {
       const item = timeline.itemsData
         .get()
-        .find((i) => i.id === properties.items[0])
+        .find((i) => i.id === properties.item)
       item.type = item.type || 'range'
       this.$refs.editItem.showDialog(item, false)
+      }
+      properties.event.preventDefault();
     },
     handleAddItem (item) {
       const type = item.type

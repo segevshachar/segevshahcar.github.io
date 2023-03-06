@@ -5,6 +5,7 @@
       color="primary"
       v-model="type"
       @update:model-value="update"
+      inline
     />
   </div>
 </template>
