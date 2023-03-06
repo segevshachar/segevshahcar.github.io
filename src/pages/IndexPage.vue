@@ -248,44 +248,45 @@ export default defineComponent({
       this.loadDataFromTimeline();
 
       const data = this.$data;
-      if (filename) {
-        api.post('/files', { id: filename, data: JSON.stringify(data) })
-        .then(() => {
-          this.$q.notify({
-            color: 'positive',
-            position: 'top',
-            message: 'Saved',
-            icon: 'report_problem'
-          })
+      api.post('/files', { id: filename, data: JSON.stringify(data) })
+      .then(() => {
+        this.$q.notify({
+          color: 'positive',
+          position: 'top',
+          message: 'Saved',
+          icon: 'report_problem'
         })
-        .catch((err) => {
-          this.$q.notify({
-            color: 'negative',
-            position: 'top',
-            message: 'Save failed:' + err,
-            icon: 'report_problem'
-          })
+      })
+      .catch((err) => {
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: 'Save failed:' + err,
+          icon: 'report_problem'
         })
+      })
+    },
+    save (filename) {
+      this.loadDataFromTimeline();
 
-      } else {
-        api.put('/files/'+ this.$data.filename, { data: JSON.stringify(data) })
-        .then(() => {
-          this.$q.notify({
-            color: 'positive',
-            position: 'top',
-            message: 'Saved',
-            icon: 'report_problem'
-          })
+      const data = this.$data;
+      api.put('/files/'+ filename, { data: JSON.stringify(data) })
+      .then(() => {
+        this.$q.notify({
+          color: 'positive',
+          position: 'top',
+          message: 'Saved',
+          icon: 'report_problem'
         })
-        .catch((err) => {
-          this.$q.notify({
-            color: 'negative',
-            position: 'top',
-            message: 'Save failed:' + err,
-            icon: 'report_problem'
-          })
+      })
+      .catch((err) => {
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: 'Save failed:' + err,
+          icon: 'report_problem'
         })
-    }
+      })
     },
     handleLoadClicked () {
       this.loadDataFromTimeline();

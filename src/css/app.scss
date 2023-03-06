@@ -35,31 +35,77 @@
 
 .vis-item.purple {
   background-color: purple;
+  border-color: yellow;
+  color: whitesmoke;
+}
+
+.vis-item.vis-background {
+  color: black;
+}
+
+.vis-item.vis-background.red {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+.vis-item.vis-background.blue {
+  background-color:rgba(0, 0, 255, 0.2);
+}
+.vis-item.vis-background.yellow {
+  background-color:rgba(255, 255, 0, 0.2);
+}
+.vis-item.vis-background.green {
+  background-color:rgba(0, 128, 0, 0.2);
+}
+.vis-item.vis-background.magneta {
+  background-color:rgba(255, 0, 255, 0.2);
+}
+.vis-item.vis-background.orange {
+  background-color:rgba(255, 165, 0, 0.2);
+}
+.vis-item.vis-background.purple {
+  background-color:rgba(128, 0, 128, 0.2);
+}
+
+
+
+
+.vis-item.vis-box {
+  border-color: black;
+}
+
+
+
+.vis-item.vis-point > .vis-dot.red {
+  border-color: red;
+}
+
+.vis-item.vis-point > .vis-dot.blue {
+  border-color: blue;
+}
+
+.vis-item.vis-point > .vis-dot.purple {
+  border-color: purple;
+}
+
+.vis-item.vis-point > .vis-dot.green {
+  border-color: green;
+}
+
+.vis-item.vis-point > .vis-dot.yellow {
+  border-color: yellow;
+}
+
+.vis-item.vis-point > .vis-dot.magenta {
+  border-color: magenta;
+}
+
+.vis-item.vis-point > .vis-dot.orange {
+  border-color: orange;
+}
+
+
+.vis-item.vis-point > .vis-item-content {
+  color: black;
   border-color: white;
-  color: white;
 }
 
 
-.vis-item {
-  top: 3px;
-}
-.vis-item.vis-dot.diamond {
-  width: 0;
-  height: 0;
-  top: 1px;
-  position: absolute;
-  border-width: 7px;
-  border: 7px solid transparent;
-  border-bottom: 7px solid red;
-  background-color: aliceblue;
-}
-.vis-item.vis-dot.diamond:after {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: -5px;
-  width: 0;
-  height: 0;
-  border: 5px solid transparent;
-  border-top: 7px solid red;
-}

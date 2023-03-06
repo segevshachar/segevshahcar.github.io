@@ -44,8 +44,10 @@ export default defineComponent({
     saveAs (filename: string) {
       if (filename) {
         this.$data.filename = filename;
+        (this.$refs.index as typeof IndexPage).saveAs(filename);
+      } else {
+        (this.$refs.index as typeof IndexPage).save(this.$data.filename);
       }
-      (this.$refs.index as typeof IndexPage).saveAs(filename);
     },
     open (filename: string) {
       this.$data.filename = filename;
