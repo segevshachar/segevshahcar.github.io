@@ -3,45 +3,50 @@
 .vis-item.red {
   color: white;
   background-color: red;
-  border-color: darkred;
+  border-color: red;
 }
 
 .vis-item.magenta {
   background-color: magenta;
-  border-color: purple;
+  border-color: magenta;
   color: white;
 }
 
 .vis-item.green {
   background-color: greenyellow;
-  border-color: green;
+  border-color: greenyellow;
 }
 
 .vis-item.orange {
-  background-color: gold;
+  background-color: orange;
   border-color: orange;
 }
 
 .vis-item.yellow {
   background-color: yellow;
-  border-color: orange;
+  border-color: yellow;
 }
 
 .vis-item.blue {
   background-color: blue;
-  border-color: white;
+  border-color: blue;
   color: white;
 }
 
 .vis-item.purple {
   background-color: purple;
-  border-color: yellow;
-  color: whitesmoke;
+  border-color: purple;
+  color: white;
 }
 
 .vis-item.vis-background {
   color: black;
 }
+
+.vis-item.vis-selected {
+  color: black;
+}
+
 
 .vis-item.vis-background.red {
   background-color: rgba(255, 0, 0, 0.2);
@@ -64,15 +69,6 @@
 .vis-item.vis-background.purple {
   background-color:rgba(128, 0, 128, 0.2);
 }
-
-
-
-
-.vis-item.vis-box {
-  border-color: black;
-}
-
-
 
 .vis-item.vis-point > .vis-dot.red {
   border-color: red;
