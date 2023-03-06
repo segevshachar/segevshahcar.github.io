@@ -321,6 +321,7 @@ export default defineComponent({
         .get()
         .find((i) => i.id === properties.item)
       item.type = item.type || 'range'
+      item.title = item.title || '';
       this.$refs.editItem.showDialog(item, false)
       }
       properties.event.preventDefault();
