@@ -312,6 +312,7 @@ export default defineComponent({
         item.group = properties.group;
         item.start = properties.time;
         item.content = '';
+        item.title = '';
         item.type = 'range';
         this.$refs.editItem.showDialog(item, true)
 
@@ -374,6 +375,7 @@ export default defineComponent({
     handleAddItemClick (item, callback) {
       callback(null)
       item.content = ''
+      item.title = ''
       item.type = 'range'
       this.$refs.editItem.showDialog(item, true)
     },
