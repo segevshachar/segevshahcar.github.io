@@ -98,6 +98,7 @@ import 'vis-timeline/styles/vis-timeline-graph2d.css'
 import EditItem from 'src/components/EditItem.vue'
 import LoadJson from 'src/components/LoadJson.vue'
 import { dateToyyyymmdd } from 'src/util/date';
+import { api } from 'boot/axios'
 
 let timeline
 
@@ -105,6 +106,7 @@ export default defineComponent({
   name: 'IndexPage',
   data () {
     return {
+      filename: 'try.json',
       title: 'Prostate Cancer Disease Progression',
       from_date: '2020-01-01',
       to_date: '2022-12-31',
@@ -242,9 +244,66 @@ export default defineComponent({
       this.$data.from_date = dateToyyyymmdd(window.start);
       this.$data.to_date = dateToyyyymmdd(window.end);
     },
+    saveAs (filename) {
+      this.loadDataFromTimeline();
+
+      const data = this.$data;
+      if (filename) {
+        api.post('/files', { id: filename, data: JSON.stringify(data) })
+        .then(() => {
+          this.$q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Saved',
+            icon: 'report_problem'
+          })
+        })
+        .catch((err) => {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: 'Save failed:' + err,
+            icon: 'report_problem'
+          })
+        })
+
+      } else {
+        api.put('/files/'+ this.$data.filename, { data: JSON.stringify(data) })
+        .then(() => {
+          this.$q.notify({
+            color: 'positive',
+            position: 'top',
+            message: 'Saved',
+            icon: 'report_problem'
+          })
+        })
+        .catch((err) => {
+          this.$q.notify({
+            color: 'negative',
+            position: 'top',
+            message: 'Save failed:' + err,
+            icon: 'report_problem'
+          })
+        })
+    }
+    },
     handleLoadClicked () {
       this.loadDataFromTimeline();
       this.$refs.loadJson.showDialog(JSON.stringify(this.$data))
+    },
+    open (filename) {
+      api.get('/files/' + filename)
+      .then((response) => {
+        this.handleLoadJson(response.data.data, filename);
+      })
+      .catch(() => {
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: 'Loading failed',
+          icon: 'report_problem'
+        })
+      })
     },
     handleSellect (properties) {
       const item = timeline.itemsData
@@ -306,7 +365,8 @@ export default defineComponent({
       item.type = 'range'
       this.$refs.editItem.showDialog(item, true)
     },
-    handleLoadJson (json) {
+    handleLoadJson (json, filename) {
+      this.$data.filename = filename;
       const data = JSON.parse(json)
       this.$data.from_date = data.from_date
       this.$data.to_date = data.to_date

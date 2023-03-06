@@ -1,45 +1,45 @@
-<!-- eslint-disable semi -->
 <template>
   <q-dialog
-    transition-show="rotate"
-    transition-hide="rotate"
     v-model="show"
     persistent
   >
     <q-card style="width: 1400px; max-width: 90vw">
       <q-card-section>
-        <div class="text-h6">JSON data</div>
+        <div class="text-h6">Save As...</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
-        <q-input v-model="json" filled autogrow type="textarea" />
+        <q-input v-model="filename" filled label="Filename" :rules="[val => !!val || 'Field is required']" />
       </q-card-section>
 
       <q-card-actions align="right">
         <q-btn flat label="Close" color="primary" v-close-popup />
-        <q-btn flat label="Load" color="primary" v-close-popup @click="load" />
+        <q-btn flat label="Save" color="primary" @click="save" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue'
 export default defineComponent({
-  name: 'LoadJson',
+  name: 'FileSaveAs',
   data () {
     return {
       show: false,
-      json: '',
+      filename: ''
     }
   },
   methods: {
-    showDialog (json: string) {
-      this.$data.show = true
-      this.$data.json = json
+    showDialog () {
+      this.$data.show = true;
     },
-    load () {
-      this.$emit('load-json', this.$data.json)
+    save () {
+      if (this.$data.filename) {
+        this.$data.show = false;
+        this.$emit('saveAs', this.$data.filename)
+      }
     },
   },
-  emits: ['load-json']
+  emits: ['saveAs']
 })
 </script>

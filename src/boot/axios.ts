@@ -3,7 +3,9 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
-const api = axios.create({ baseURL: 'https://api.clinicaleditor.info' })
+const origin = window.location.origin;
+const baseUrl = origin.startsWith('http://localhost') ? 'http://localhost:3000' : 'https://api.clinicaleditor.info';
+const api = axios.create({ baseURL: baseUrl });
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api

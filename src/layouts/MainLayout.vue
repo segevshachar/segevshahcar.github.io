@@ -3,10 +3,10 @@
     <q-header elevated>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu">
-          <TheToolbarMenu @load="load" @download-json="download">
+          <TheToolbarMenu @load="load" @download-json="download" @saveAs="saveAs" @open="open" :show-save="showSave">
           </TheToolbarMenu>
         </q-btn>
-        <q-toolbar-title> App </q-toolbar-title>
+        <q-toolbar-title> {{ filename }} </q-toolbar-title>
       </q-toolbar>
     </q-header>
     <q-page-container>
@@ -20,43 +20,36 @@ import TheToolbarMenu from 'src/components/TheToolbarMenu.vue'
 import IndexPage from 'src/pages/IndexPage.vue'
 import { saveTextAsFile } from 'src/util/download'
 import { defineComponent } from 'vue'
-import { api } from 'boot/axios'
 export default defineComponent({
   name: 'MainLayout',
   components: { IndexPage, TheToolbarMenu },
   data () {
-    return { name: '' }
+    return {
+      filename: '',
+    }
+  },
+  computed: {
+    showSave: function () {
+      return this.filename != '';
+    }
   },
   methods: {
     load () {
-      (this.$refs as any).index.handleLoadClicked();
+      (this.$refs.index as typeof IndexPage).handleLoadClicked();
     },
     download () {
-      (this.$refs as any).index.loadDataFromTimeline();
-      //saveTextAsFile(JSON.stringify((this.$refs as any).index.$data));
-
-      const data = JSON.stringify((this.$refs as any).index.$data);
-      const headers = {
-        'Content-Type': 'application/json',
+      (this.$refs as typeof IndexPage).index.loadDataFromTimeline();
+      saveTextAsFile(JSON.stringify((this.$refs.index as typeof IndexPage).$data));
+    },
+    saveAs (filename: string) {
+      if (filename) {
+        this.$data.filename = filename;
       }
-      api.post('/files', {id: 'try.json', data: 'data' })
-      .then((response) => {
-        this.$q.notify({
-          color: 'positive',
-          position: 'top',
-          message: 'Saved',
-          icon: 'report_problem'
-        })
-      })
-      .catch((err) => {
-        this.$q.notify({
-          color: 'negative',
-          position: 'top',
-          message: 'Loading failed',
-          icon: 'report_problem'
-        })
-      })
-
+      (this.$refs.index as typeof IndexPage).saveAs(filename);
+    },
+    open (filename: string) {
+      this.$data.filename = filename;
+      (this.$refs.index as typeof IndexPage).open(filename);
     }
   }
 })
