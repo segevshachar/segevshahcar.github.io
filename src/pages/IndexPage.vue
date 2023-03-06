@@ -87,6 +87,11 @@
       @add-new-item="handleAddItem"
       @update-item="handleUpdateItem"
     ></EditItem>
+    <EditGroup
+      ref="editGroup"
+      @add-new-group="handleAddGroup"
+      @update-group="handleUpdateGroup"
+    ></EditGroup>
     <LoadJson ref="loadJson" @load-json="handleLoadJson"></LoadJson>
   </div>
 </template>
@@ -96,6 +101,7 @@ import { defineComponent } from 'vue'
 import { Timeline } from 'vis-timeline/standalone'
 import 'vis-timeline/styles/vis-timeline-graph2d.css'
 import EditItem from 'src/components/EditItem.vue'
+import EditGroup from 'src/components/EditGroup.vue'
 import LoadJson from 'src/components/LoadJson.vue'
 import { dateToyyyymmdd } from 'src/util/date';
 import { api } from 'boot/axios'
@@ -195,16 +201,15 @@ export default defineComponent({
         {
           id: 'treatment',
           content: 'Treatment',
-          title: 'Treatment title',
           subgroupStack: true
         },
         {
           id: 'diagnosis',
-          content: 'Diagnosis'
+          content: 'Diagnosis',
         },
         {
           id: 'diseases',
-          content: 'Diseases'
+          content: 'Diseases',
         }
       ]
     }
@@ -307,7 +312,22 @@ export default defineComponent({
       })
     },
     handleSellect (properties) {
-      if (!properties.item) {
+      if (properties.what == 'item') {
+        const item = timeline.itemsData
+          .get()
+          .find((i) => i.id === properties.item)
+        item.type = item.type || 'range'
+        item.title = item.title || '';
+        this.$refs.editItem.showDialog({...item}, false)
+      } else if (properties.what == 'background') {
+        const item = timeline.itemsData.get()
+          .find((i) => i.type == 'background' && i.start <= properties.time && i.end >= properties.time)
+
+        if (item) {
+          item.type = item.type || 'background'
+          item.title = item.title || '';
+          this.$refs.editItem.showDialog({...item}, false)
+        } else {
         let item = {};
         item.group = properties.group;
         item.start = properties.time;
@@ -315,25 +335,30 @@ export default defineComponent({
         item.title = '';
         item.type = 'range';
         this.$refs.editItem.showDialog(item, true)
-
-      } else {
-      const item = timeline.itemsData
-        .get()
-        .find((i) => i.id === properties.item)
-      item.type = item.type || 'range'
-      item.title = item.title || '';
-      this.$refs.editItem.showDialog(item, false)
+        }
+      } else if (properties.what == 'group-label') {
+        const group = timeline.groupsData
+          .get()
+          .find((i) => i.id === properties.group)
+        if (group && group.id) {
+          this.$refs.editGroup.showDialog({...group}, false)
+        }
+      } else if (!properties.what) {
+        const group = {};
+        this.$refs.editGroup.showDialog(group, true)
       }
+
       properties.event.preventDefault();
     },
-    handleAddItem (item) {
+    prepareItem(item) {
       const type = item.type
       const end = item.end
         ? item.end
         : type === 'point' || type === 'box'
           ? undefined
           : new Date(item.start.getTime() + 86400000 * 30)
-      const group = type === 'background' ? undefined : item.group
+      const group = type === 'background' ? undefined : item.group || this.group_data[0].id;
+      const subgroup = type === 'background' ? undefined : item.subgroup;
       const newItem = {
         content: item.content,
         title: item.title,
@@ -341,44 +366,43 @@ export default defineComponent({
         end,
         group,
         type,
-        subgroup: item.subgroup,
+        subgroup: subgroup,
         className: item.className,
       }
+      return newItem;
+    },
+    handleAddItem (item) {
+      const newItem = this.prepareItem(item);
       const newItems = timeline.itemsData.get()
       newItems.push(newItem)
       timeline.setItems(newItems)
     },
+    handleAddGroup (group) {
+      const newItem = group;
+      const newItems = timeline.groupsData.get()
+      newItems.push(newItem)
+      timeline.setGroups(newItems)
+    },
+
     handleUpdateItem (item) {
       const newItems = timeline.itemsData.get()
       const index = newItems.findIndex((i) => i.id === item.id)
-
-      const type = item.type
-      const end = item.end
-        ? item.end
-        : type === 'point' || type === 'box'
-          ? undefined
-          : new Date(item.start.getTime() + 86400000 * 30)
-      const group = type === 'background' ? undefined : item.group
-      const newItem = {
-        content: item.content,
-        title: item.title,
-        start: item.start,
-        end,
-        group,
-        type,
-        subgroup: item.subgroup,
-        className: item.className,
-      }
-
+      const newItem = this.prepareItem(item);
       newItems[index] = newItem
       timeline.setItems(newItems)
+    },
+    handleUpdateGroup (group) {
+      const newGroups = timeline.groupsData.get();
+      const index = newGroups.findIndex((i) => i.id === group.id);
+      newGroups[index] = group;
+      timeline.setGroups(newGroups);
     },
     handleAddItemClick (item, callback) {
       callback(null)
       item.content = ''
       item.title = ''
       item.type = 'range'
-      this.$refs.editItem.showDialog(item, true)
+      this.$refs.editItem.showDialog({...item}, true)
     },
     handleLoadJson (json, filename) {
       this.$data.filename = filename;
@@ -396,6 +420,6 @@ export default defineComponent({
       );
     }
   },
-  components: { EditItem, LoadJson }
+  components: { EditItem, LoadJson, EditGroup }
 })
 </script>

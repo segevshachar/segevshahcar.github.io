@@ -1,3 +1,9 @@
+export interface Group {
+  id: string;
+  content: string;
+  subgroupStack: boolean;
+}
+
 export interface Item {
   content: string;
   title: string;
