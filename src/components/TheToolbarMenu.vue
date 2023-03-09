@@ -5,6 +5,9 @@
         <q-item clickable v-close-popup @click="openClicked">
           <q-item-section>Open</q-item-section>
         </q-item>
+        <q-item clickable v-close-popup @click="editZoomClicked">
+          <q-item-section>Edit Zoom</q-item-section>
+        </q-item>
         <q-item clickable v-close-popup @click="loadClicked">
           <q-item-section>Show Json</q-item-section>
         </q-item>
@@ -43,7 +46,9 @@ export default defineComponent({
     open (filename: string) {
       this.$emit('open', filename);
     },
-
+    editZoomClicked () {
+      this.$emit('edit-zoom')
+    },
     loadClicked () {
       this.$emit('load')
     },
@@ -60,7 +65,7 @@ export default defineComponent({
       this.$emit('download-json')
     }
   },
-  emits: ['download-json', 'load', 'open', 'saveAs'],
+  emits: ['download-json', 'load', 'open', 'saveAs', 'edit-zoom'],
   components: { FileSaveAs, OpenFile },
 })
 </script>

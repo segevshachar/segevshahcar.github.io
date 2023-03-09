@@ -126,9 +126,7 @@ export default defineComponent({
     return {
       show: false,
       newItem: false,
-      item: { content: '', title: '', type: 'box', group: '', subgroup: '', className: '', start: new Date(), end: new Date() },
-      start: '',
-      end: '',
+      item: { content: '', title: '', type: 'box', group: '', subgroup: '', className: '' },
       colors: colors,
     };
   },

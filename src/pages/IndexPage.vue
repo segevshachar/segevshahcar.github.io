@@ -2,9 +2,9 @@
   <div class="home">
     <div class="row">
       <div class="small-12 text-center" style="margin-left: 40px">
-        <h4>{{ this.$data.title }}</h4>
+        <h4>{{ this.$data.title }}: {{ this.zoomDisplay }} </h4>
       </div>
-      <div id="chart4" style="height: 700px; width: 100%"></div>
+      <div id="chart4" style="height: 500px; width: 100%"></div>
     </div>
     <EditItem
       ref="editItem"
@@ -16,6 +16,7 @@
       @add-new-group="handleAddGroup"
       @update-group="handleUpdateGroup"
     ></EditGroup>
+    <EditZoom ref="editZoom" @update-zoom="refresh"></EditZoom>
     <LoadJson ref="loadJson" @load-json="handleLoadJson"></LoadJson>
   </div>
 </template>
@@ -27,6 +28,7 @@ import 'vis-timeline/styles/vis-timeline-graph2d.css'
 import EditItem from 'src/components/EditItem.vue'
 import EditGroup from 'src/components/EditGroup.vue'
 import LoadJson from 'src/components/LoadJson.vue'
+import EditZoom from 'src/components/EditZoom.vue'
 import { dateToyyyymmdd } from 'src/util/date';
 import { api } from 'boot/axios'
 
@@ -411,8 +413,32 @@ export default defineComponent({
         new Date(this.$data.from_date),
         new Date(this.$data.to_date)
       );
+    },
+    editZoom () {
+      this.loadDataFromTimeline();
+      this.$refs.editZoom.showDialog(this.$data.zoom_data);
+    },
+    refresh (zoom_data) {
+      this.$data.zoom_data = zoom_data;
+
+      if (this.zoom_data) {
+        this.$data.zoom_data.sort((a, b) => a.months > b.months ? 1 : -1);
+        const window = timeline.getWindow();
+        const months = (window.end.getTime() - window.start.getTime()) / (1000*60*60*24*30);
+        this.zoomIndex = this.zoom_data.findIndex((i) => i.months > months);
+      } else {
+        this.zoomIndex = -1;
+      }
+      const item_data = this.zoomIndex == -1 ? this.item_data : this.zoom_data[this.zoomIndex].item_data;
+      timeline.setItems(this.deep_copy(item_data));
+    },
+
+  },
+  computed: {
+    zoomDisplay () {
+      return this.zoomIndex == -1 ? 'Overview' : 'Zoom ' + this.zoom_data[this.zoomIndex].months + ' months';
     }
   },
-  components: { EditItem, LoadJson, EditGroup }
+  components: { EditItem, LoadJson, EditGroup, EditZoom }
 })
 </script>

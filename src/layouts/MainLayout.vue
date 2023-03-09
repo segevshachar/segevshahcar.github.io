@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu">
-          <TheToolbarMenu @load="load" @download-json="download" @saveAs="saveAs" @open="open" :show-save="showSave">
+          <TheToolbarMenu @load="load" @edit-zoom="editZoom" @download-json="download" @saveAs="saveAs" @open="open" :show-save="showSave">
           </TheToolbarMenu>
         </q-btn>
         <q-toolbar-title> {{ filename }} </q-toolbar-title>
@@ -36,6 +36,9 @@ export default defineComponent({
   methods: {
     load () {
       (this.$refs.index as typeof IndexPage).handleLoadClicked();
+    },
+    editZoom () {
+      (this.$refs.index as typeof IndexPage).editZoom();
     },
     download () {
       (this.$refs as typeof IndexPage).index.loadDataFromTimeline();
