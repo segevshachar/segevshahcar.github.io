@@ -6,82 +6,6 @@
       </div>
       <div id="chart4" style="height: 700px; width: 100%"></div>
     </div>
-    <div class="q-pa-md">
-      <div class="row">
-        <div class="col" style="max-width: 200px margin: 50px;">
-          <q-input
-            label="From"
-            filled
-            v-model="from_date"
-            :rules="[(val) => Date.parse(val) || 'Invalid date.']"
-            input-class="cursor-pointer"
-            mask="####-##-##"
-          >
-            <q-popup-proxy ref="qDateProxy" :breakpoint="0" behavior="menu">
-              <q-date
-                v-model="from_date"
-                minimal
-                @update:model-value="$refs.qDateProxy.hide()"
-                no-unset
-                mask="YYYY-MM-DD"
-              >
-                <div class="row items-center justify-end">
-                  <q-btn
-                    v-close-popup
-                    label="Close"
-                    color="primary"
-                    flat
-                  ></q-btn>
-                </div>
-              </q-date>
-            </q-popup-proxy>
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer"></q-icon>
-            </template>
-          </q-input>
-        </div>
-        <div class="col">
-          <q-input
-            label="To"
-            filled
-            v-model="to_date"
-            :rules="[(val) => Date.parse(val) || 'Invalid date.']"
-            input-class="cursor-pointer"
-            mask="####-##-##"
-          >
-            <q-popup-proxy ref="qDateProxy" :breakpoint="0" behavior="menu">
-              <q-date
-                v-model="to_date"
-                minimal
-                @update:model-value="$refs.qDateProxy.hide()"
-                no-unset
-                mask="YYYY-MM-DD"
-              >
-                <div class="row items-center justify-end">
-                  <q-btn
-                    v-close-popup
-                    label="Close"
-                    color="primary"
-                    flat
-                  ></q-btn>
-                </div>
-              </q-date>
-            </q-popup-proxy>
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer"></q-icon>
-            </template>
-          </q-input>
-        </div>
-        <div class="col">
-          <q-btn
-            color="primary"
-            label="Reset"
-            @click="handleResetClicked"
-            padding="15px 30px"
-          />
-        </div>
-      </div>
-    </div>
     <EditItem
       ref="editItem"
       @add-new-item="handleAddItem"
@@ -116,6 +40,40 @@ export default defineComponent({
       title: 'Prostate Cancer Disease Progression',
       from_date: '2020-01-01',
       to_date: '2022-12-31',
+      zoomIndex: -1,
+      zoom_data:[
+        {
+          months: 12,
+          item_data: [
+          {
+            content: 'Hypertension 12',
+            start: '2020-01-01',
+            end: '2020-11-31',
+            group: 'diseases'
+          },
+          {
+            content: 'Diabetes 12',
+            start: '2020-01-01',
+            end: '2020-05-31',
+            group: 'diseases'
+          }],
+        },
+        {
+          months: 6,
+          item_data: [
+          {
+            content: 'Hypertension 6',
+            start: '2020-02-01',
+            end: '2020-03-31',
+            group: 'diseases'
+          },
+          {
+            content: 'Diabetes6',
+            start: '2020-01-01',
+            end: '2020-02-31',
+            group: 'diseases'
+          }],
+        }],
       item_data: [
         {
           content: 'Hypertension',
@@ -233,9 +191,14 @@ export default defineComponent({
       this.$data.group_data,
       options
     )
-    timeline.on('contextmenu', this.handleSellect)
+    timeline.on('contextmenu', this.handleSellect);
+    timeline.on('rangechanged', this.rangechanged);
+    this.zoom_data.sort((a, b) => a.months > b.months ? 1 : -1);
   },
   methods: {
+    deep_copy(input) {
+      return JSON.parse(JSON.stringify(input));
+    },
     handleResetClicked () {
       timeline.setWindow(
         new Date(this.$data.from_date),
@@ -243,8 +206,12 @@ export default defineComponent({
       )
     },
     loadDataFromTimeline () {
-      const items = timeline.itemsData.get()
-      this.$data.item_data = items
+      const items = timeline.itemsData.get();
+      if (this.zoomIndex == -1) {
+        this.item_data = items;
+      } else {
+        this.zoom_data[this.zoomIndex].item_data = items;
+      }
       const window = timeline.getWindow();
       this.$data.from_date = dateToyyyymmdd(window.start);
       this.$data.to_date = dateToyyyymmdd(window.end);
@@ -350,6 +317,21 @@ export default defineComponent({
 
       properties.event.preventDefault();
     },
+    rangechanged (properties) {
+      const months = (properties.end.getTime() - properties.start.getTime()) / (1000*60*60*24*30);
+      const currentZoomIndex = this.zoomIndex;
+      this.zoomIndex = this.zoom_data.findIndex((i) => i.months > months);
+      if (currentZoomIndex != this.zoomIndex) {
+        const items = this.deep_copy(timeline.itemsData.get());
+        if (currentZoomIndex == -1) {
+          this.item_data = items;
+        } else {
+          this.zoom_data[currentZoomIndex].item_data = items;
+        }
+        const item_data = this.zoomIndex == -1 ? this.item_data : this.zoom_data[this.zoomIndex].item_data;
+        timeline.setItems(this.deep_copy(item_data));
+      }
+    },
     prepareItem(item) {
       const type = item.type
       const end = item.end
@@ -412,7 +394,18 @@ export default defineComponent({
       this.$data.title = data.title
       this.$data.item_data = data.item_data
       this.$data.group_data = data.group_data
-      timeline.setItems(data.item_data);
+      this.$data.zoom_data = data.zoom_data
+
+      if (this.zoom_data) {
+        this.$data.zoom_data.sort((a, b) => a.months > b.months ? 1 : -1);
+        const months = ((new Date(data.to_date)).getTime() - (new Date(data.from_date)).getTime()) / (1000*60*60*24*30);
+        this.$data.zoomIndex = this.$data.zoom_data.findIndex((i) => i.months > months);
+      } else {
+        this.zoomIndex = -1;
+      }
+
+      const item_data = this.zoomIndex == -1 ? data.item_data : data.zoom_data[this.zoomIndex].item_data;
+      timeline.setItems(item_data);
       timeline.setGroups(data.group_data);
       timeline.setWindow(
         new Date(this.$data.from_date),
