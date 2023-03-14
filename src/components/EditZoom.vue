@@ -54,13 +54,17 @@ export default defineComponent({
     showDialog(zoom_data: any[]) {
       this.$data.show = true;
       this.$data.zoom_data = zoom_data;
-      this.$data.rows = zoom_data.map((row, index) => {
-        return {
-          id: index,
-          months: row.months,
-          numOfItems: row.item_data.length,
-        }
-      })
+      if (zoom_data) {
+        this.$data.rows = zoom_data.map((row, index) => {
+          return {
+            id: index,
+            months: row.months,
+            numOfItems: row.item_data.length,
+          }
+        })
+      } else {
+        this.$data.rows = [];
+      }
     },
     addNewZoom(months: number) {
       this.$data.zoom_data.push({months: months, item_data: [{}]})
@@ -80,7 +84,7 @@ export default defineComponent({
     updateZoom () {
       const new_items = this.rows
         .map((r, i) => {
-          const item_data = i < this.zoom_data.length ? this.zoom_data[i].item_data : [];
+          const item_data = this.zoom_data && i < this.zoom_data.length ? this.zoom_data[i].item_data : [];
           return { months: Number(r.months), item_data}
         });
       this.$emit('update-zoom',new_items)

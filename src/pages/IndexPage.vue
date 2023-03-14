@@ -214,6 +214,7 @@ export default defineComponent({
       } else {
         this.zoom_data[this.zoomIndex].item_data = items;
       }
+      this.$data.group_data = timeline.groupsData.get();
       const window = timeline.getWindow();
       this.$data.from_date = dateToyyyymmdd(window.start);
       this.$data.to_date = dateToyyyymmdd(window.end);

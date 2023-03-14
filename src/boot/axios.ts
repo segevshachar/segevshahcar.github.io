@@ -4,7 +4,7 @@ import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
 const origin = window.location.origin;
-const baseUrl = origin.startsWith('http://localhost') ? 'http://localhost:3000' : 'https://api.clinicaleditor.info';
+const baseUrl = origin.startsWith('http://localhost123') ? 'http://localhost:3000' : 'https://api.clinicaleditor.info';
 const api = axios.create({ baseURL: baseUrl });
 
 export default boot(({ app }) => {
